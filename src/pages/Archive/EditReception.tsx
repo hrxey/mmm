@@ -306,12 +306,18 @@ export const EditReception: React.FC = () => {
       }
 
       if (!subdivision) {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          throw new Error('Пользователь не авторизован')
+        }
+
         const { data: newSubdivision, error: createError } = await supabase
           .from('subdivisions')
           .insert({
             name: subdivisionName,
             code: '',
             description: '',
+            user_id: user.id,
           })
           .select()
           .single()
@@ -323,6 +329,11 @@ export const EditReception: React.FC = () => {
         subdivision = newSubdivision
       }
 
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('Пользователь не авторизован')
+      }
+
       const { data: newMotor, error: motorError } = await supabase
         .from('accepted_motors')
         .insert({
@@ -331,6 +342,7 @@ export const EditReception: React.FC = () => {
           position_in_reception: newPosition,
           motor_service_description: serviceName,
           motor_inventory_number: motorInventoryNumber,
+          user_id: user.id,
         })
         .select()
         .single()
@@ -346,6 +358,7 @@ export const EditReception: React.FC = () => {
         transaction_type: item.transaction_type,
         quantity: item.quantity,
         price: item.price,
+        user_id: user.id,
       }))
 
       const { error: itemsError } = await supabase

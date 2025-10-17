@@ -346,7 +346,7 @@ export const duplicateMotor = async (motorId: string) => {
     .eq('reception_id', motor.reception_id)
     .order('position_in_reception', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (maxPosError && maxPosError.code !== 'PGRST116') {
     throw new Error(`Ошибка получения максимальной позиции: ${maxPosError.message}`)
